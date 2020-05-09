@@ -1,0 +1,60 @@
+{
+    "data": [
+        {
+            "county": "ANDERSON",
+            "city": "CAYUGA",
+            "zipcode": 75832,
+            "latitude": "+31.794191",
+            "longitude": "-095.661964"
+        },
+        {
+            "county": "ANDERSON",
+            "city": "ELKHART",
+            "zipcode": 75839,
+            "latitude": "+31.648030",
+            "longitude": "-095.555052"
+        },
+        {
+            "county": "ANDERSON",
+            "city": "FRANKSTON",
+            "zipcode": 75763,
+            "latitude": "+31.992987",
+            "longitude": "-095.499133"
+        },
+        {
+            "county": "ANDERSON",
+            "city": "MONTALBA",
+            "zipcode": 75853,
+            "latitude": "+31.794191",
+            "longitude": "-095.661964"
+        },
+        {
+            "county": "ANDERSON",
+            "city": "NECHES",
+            "zipcode": 75779,
+            "latitude": "+31.794191",
+            "longitude": "-095.661964"
+        },
+        {
+            "county": "ANDERSON",
+            "city": "PALESTINE",
+            "zipcode": 75801,
+            "latitude": "+31.848542",
+            "longitude": "-095.685179"
+        },
+        {
+            "county": "ZAVALA",
+            "city": "LA PRYOR",
+            "zipcode": 78872,
+            "latitude": "+28.943649",
+            "longitude": "-099.843874"
+        },
+        {
+            "county": "DALLAS",
+            "city": "COPPELL",
+            "zipcode": 75019,
+            "latitude": "+32.767268",
+            "longitude": "-096.777626"
+        }
+    ]
+}

@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umbrella-zipcodes-app
+  namespace: ibcprod
+  labels:
+    app: umbrella-zipcodes-app
+spec:
+  selector:
+    matchLabels:
+      app: umbrella-zipcodes-app
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: umbrella-zipcodes-app
+        tier: backend
+    spec:
+      containers:
+      - name: umbrella-zipcodes-app
+        image: kranthik123/umbrella_zipcodes:latest
+        ports:
+        - containerPort: 4000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: umbrella-zipcodes-prod-svc
+  namespace: ibcprod
+  labels:
+    service: flask
+spec:
+  selector:
+    app: umbrella-zipcodes-app
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 4000
+  type: LoadBalancer
