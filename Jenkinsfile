@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker image"
-                    myapp = docker.build("kranthik123/umbrella_zipcodes:${env.BUILD_ID}")
+                    myapp = docker.build("kranthik123/ttc_products:${env.BUILD_ID}")
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script{
                     echo "Starting Docker Container locally for testing the build"
-                    sh "docker run -d -p 4000:4000 kranthik123/umbrella_zipcodes:${env.BUILD_ID}"
+                    sh "docker run -d -p 4000:4000 kranthik123/ttc_products:${env.BUILD_ID}"
                 }
             }
         }
@@ -54,7 +54,7 @@ pipeline {
         }
         stage('Deploy-To-Dev') {
             steps {
-              sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat dev_deployment.yaml && sed -i 's/umbrella_zipcodes:latest/umbrella_zipcodes:${env.BUILD_ID}/g' \$WORKSPACE/manifests/dev_deployment.yaml"
+              sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat dev_deployment.yaml && sed -i 's/ttc_products:latest/ttc_products:${env.BUILD_ID}/g' \$WORKSPACE/manifests/dev_deployment.yaml"
               sh "cat \$WORKSPACE/manifests/dev_deployment.yaml"
               echo "Deploying to Dev Kubernetes namespace"
               step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: "manifests/dev_deployment.yaml", credentialsId: env.CREDENTIALS_ID, verifyDeployments: false])
@@ -63,7 +63,7 @@ pipeline {
         }
         stage('Deploy-To-stage') {
             steps {
-                sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat stage_deployment.yaml && sed -i 's/umbrella_zipcodes:latest/umbrella_zipcodes:${env.BUILD_ID}/g' \$WORKSPACE/manifests/stage_deployment.yaml"
+                sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat stage_deployment.yaml && sed -i 's/ttc_products:latest/ttc_products:${env.BUILD_ID}/g' \$WORKSPACE/manifests/stage_deployment.yaml"
                 sh "cat \$WORKSPACE/manifests/stage_deployment.yaml"
                 echo "Deploying to stage Kubernetes namespace."
                 step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: "manifests/stage_deployment.yaml", credentialsId: env.CREDENTIALS_ID, verifyDeployments: false])
@@ -72,7 +72,7 @@ pipeline {
         }
         stage('Deploy-To-prod') {
             steps {
-                sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat prod_deployment.yaml && sed -i 's/umbrella_zipcodes:latest/umbrella_zipcodes:${env.BUILD_ID}/g' \$WORKSPACE/manifests/prod_deployment.yaml"
+                sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat prod_deployment.yaml && sed -i 's/ttc_products:latest/ttc_products:${env.BUILD_ID}/g' \$WORKSPACE/manifests/prod_deployment.yaml"
                 sh "cat \$WORKSPACE/manifests/prod_deployment.yaml"
                 echo "Deploying to Prod Kubernetes namespace."
                 step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: "manifests/prod_deployment.yaml", credentialsId: env.CREDENTIALS_ID, verifyDeployments: false])
