@@ -7,8 +7,8 @@ pipeline {
         CREDENTIALS_ID = 'reliable-brace-gcr-credentials'
         LOCATION = 'us-central1-a'
     }
-    stages {
-        stage('cleanup') {
+    prods {
+        prod('cleanup') {
             steps {
                 script{
                     echo "Stopping any old container to release ports needs for the new builds"
@@ -18,7 +18,7 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+        prod('Build') {
             steps {
                 script {
                     echo "Building Docker image"
@@ -26,7 +26,7 @@ pipeline {
                 }
             }
         }
-        stage('run_container') {
+        prod('run_container') {
             steps {
                 script{
                     echo "Starting Docker Container locally for testing the build"
@@ -34,7 +34,7 @@ pipeline {
                 }
             }
         }
-        stage('build-test') {
+        prod('build-test') {
             steps {
                 withPythonEnv('python3') {
                     echo "Testing the new build to validate code and provide test coverage"
@@ -42,7 +42,7 @@ pipeline {
                 }
             }
         }
-        stage('push-image') {
+        prod('push-image') {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'DockerHubCreds') {
@@ -52,7 +52,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy-To-Dev') {
+        prod('Deploy-To-Dev') {
             steps {
               sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat dev_deployment.yaml && sed -i 's/umbrella_zipcodes:latest/umbrella_zipcodes:${env.BUILD_ID}/g' \$WORKSPACE/manifests/dev_deployment.yaml"
               sh "cat \$WORKSPACE/manifests/dev_deployment.yaml"
@@ -61,16 +61,16 @@ pipeline {
               echo "Deploying to Dev Kubernetes namespace completed successfully."
             }
         }
-        stage('Deploy-To-stage') {
+        prod('Deploy-To-prod') {
             steps {
-                sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat stage_deployment.yaml && sed -i 's/umbrella_zipcodes:latest/umbrella_zipcodes:${env.BUILD_ID}/g' \$WORKSPACE/manifests/stage_deployment.yaml"
-                sh "cat \$WORKSPACE/manifests/stage_deployment.yaml"
-                echo "Deploying to Stage Kubernetes namespace."
-                step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: "manifests/stage_deployment.yaml", credentialsId: env.CREDENTIALS_ID, verifyDeployments: false])
-                echo "Deploying to Stage Kubernetes namespace completed successfully."
+                sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat prod_deployment.yaml && sed -i 's/umbrella_zipcodes:latest/umbrella_zipcodes:${env.BUILD_ID}/g' \$WORKSPACE/manifests/prod_deployment.yaml"
+                sh "cat \$WORKSPACE/manifests/prod_deployment.yaml"
+                echo "Deploying to prod Kubernetes namespace."
+                step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: "manifests/prod_deployment.yaml", credentialsId: env.CREDENTIALS_ID, verifyDeployments: false])
+                echo "Deploying to prod Kubernetes namespace completed successfully."
             }
         }
-        stage('Deploy-To-prod') {
+        prod('Deploy-To-prod') {
             steps {
                 sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat prod_deployment.yaml && sed -i 's/umbrella_zipcodes:latest/umbrella_zipcodes:${env.BUILD_ID}/g' \$WORKSPACE/manifests/prod_deployment.yaml"
                 sh "cat \$WORKSPACE/manifests/prod_deployment.yaml"

@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: umbrella-zipcodes-app
-  namespace: ibcstage
+  name: ttc-products-stage-app
+  namespace: ttc-stage
   labels:
-    app: umbrella-zipcodes-app
+    app: ttc-products-stage-app
 spec:
   selector:
     matchLabels:
-      app: umbrella-zipcodes-app
+      app: ttc-products-stage-app
       tier: backend
   template:
     metadata:
       labels:
-        app: umbrella-zipcodes-app
+        app: ttc-products-stage-app
         tier: backend
     spec:
       containers:
-      - name: umbrella-zipcodes-app
-        image: kranthik123/umbrella_zipcodes:latest
+      - name: ttc-products-stage-app
+        image: kranthik123/ttc_products:latest
         ports:
         - containerPort: 4000
 
@@ -27,13 +27,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: umbrella-zipcodes-stage-svc
-  namespace: ibcstage
+  name: ttc-products-stage-svc
+  namespace: ttc-stage
   labels:
-    service: flask
+    service: ttc-products-stage-svc
 spec:
   selector:
-    app: umbrella-zipcodes-app
+    app: ttc-products-stage-app
   ports:
   - protocol: "TCP"
     port: 80
