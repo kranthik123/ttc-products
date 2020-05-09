@@ -34,6 +34,19 @@ pipeline {
                 }
             }
         }
+        stage('SonarQube Scanner'){
+            steps{
+                script{
+                    withSonarQubeEnv('SonarQube_Server') {
+                        sh "pwd & ls -l"
+                        sh "/opt/SonarScanner/sonar-scanner/bin/sonar-scanner -X -Dproject.settings=sonar-project.properties -Dsonar.projectVersion=${env.BUILD_ID}"
+                    }
+//                    timeout(time: 10, unit: 'MINUTES') {
+//                        waitForQualityGate(webhookSecretId: 'Micro_Flask_Webhook_Secret') abortPipeline: true
+//                    }
+                }
+            }
+        }
         stage('build-test') {
             steps {
                 withPythonEnv('python3') {
@@ -61,6 +74,18 @@ pipeline {
               echo "Deploying to Dev Kubernetes namespace completed successfully."
             }
         }
+        stage('Trivy - Container Security Scanner') {
+            steps{
+                sh "/usr/local/bin/trivy kranthik123/ttc_products:${env.BUILD_ID}"
+                }
+            }
+        stage('promote-to-stage') {
+            steps{
+                timeout(time: 10, unit: "MINUTES") {
+                    input message: 'Do you want to approve the deploy in stage?', ok: 'Yes'
+                }
+            }
+        }
         stage('Deploy-To-stage') {
             steps {
                 sh "cd \$WORKSPACE/manifests && pwd && ls -l && cat stage_deployment.yaml && sed -i 's/ttc_products:latest/ttc_products:${env.BUILD_ID}/g' \$WORKSPACE/manifests/stage_deployment.yaml"
@@ -68,6 +93,14 @@ pipeline {
                 echo "Deploying to stage Kubernetes namespace."
                 step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: "manifests/stage_deployment.yaml", credentialsId: env.CREDENTIALS_ID, verifyDeployments: false])
                 echo "Deploying to stage Kubernetes namespace completed successfully."
+            }
+        }
+        stage('promote-to-prod') {
+            steps{
+                // Input Step
+                timeout(time: 10, unit: "MINUTES") {
+                    input message: 'Do you want to approve the deployment to production?', ok: 'Yes'
+                }
             }
         }
         stage('Deploy-To-prod') {
@@ -80,6 +113,12 @@ pipeline {
             }
         }
     }
+      post {
+        always {jiraSendBuildInfo  branch: 'IBC-25', site: 'ibcprod.atlassian.net'}
+        success {echo 'The job run was successful.'}
+        failure {echo 'The job run was unsuccessful.'}
+        unstable {echo 'The Job run but marked as unstable'}
+            }
 
   }
 //===================================
