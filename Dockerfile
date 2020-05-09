@@ -8,4 +8,4 @@ ADD app/. /app/
 RUN pip install -r ./requirements.txt
 
 ENTRYPOINT [ "python" ]
-CMD [ "flask_app.py"]
+CMD [ "products.py"]
