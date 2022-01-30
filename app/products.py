@@ -8,7 +8,7 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/')
 def main():
-    products_list = ["Rain Coat", "Rain Boots"]
+    products_list = ["Umbrella", "Rain Coat", "Rain Boots"]
     return jsonify(products_list)
 
 @app.route('/<page_name>')
